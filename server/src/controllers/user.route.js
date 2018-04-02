@@ -3,6 +3,7 @@ const userRouter = express.Router();
 const parser = require('body-parser').json();
 
 const User = require('../models/user.model');
+const { mustBeUser } = require('./mustBeUser');
 
 userRouter.post('/signup', parser, (req, res) => {
     const { email, password, phone, name } = req.body;
@@ -14,6 +15,12 @@ userRouter.post('/signup', parser, (req, res) => {
 userRouter.post('/signin', parser, (req, res) => {
     const { email, password } = req.body;
     User.signIn(email, password)
+    .then(user => res.send({ success: true, user }))
+    .catch(error => res.status(error.statusCode).send({ success: false, message: error.message, code: error.code }));
+});
+
+userRouter.post('/check', mustBeUser, (req, res) => {
+    User.check(req.idUser)
     .then(user => res.send({ success: true, user }))
     .catch(error => res.status(error.statusCode).send({ success: false, message: error.message, code: error.code }));
 });

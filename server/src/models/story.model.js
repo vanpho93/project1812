@@ -5,7 +5,9 @@ const Schema = mongoose.Schema;
 
 const storySchema = new Schema({
     author: { type: Schema.Types.ObjectId, ref: 'User' },
-    content: { type: String, required: true, trim: true }
+    content: { type: String, required: true, trim: true },
+    fans: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
 });
 
 const StoryModel = mongoose.model('Story', storySchema);
@@ -29,6 +31,20 @@ class Story extends StoryModel {
 
     static async updateStory(idUser, idStory, content) {
         const story = await Story.findOneAndUpdate({ _id: idStory, author: idUser }, { content }, { new: true })
+        .catch(error => { throw new MyError('Cannot find story.', 'CANNOT_FIND_STORY', 404); });
+        if (!story) throw new MyError('Cannot find story.', 'CANNOT_FIND_STORY', 404);
+        return story;
+    }
+
+    static async likeStory(idFan, idStory) {
+        const story = await Story.findByIdAndUpdate(idStory, { $addToSet: { fans: idFan } }, { new: true })
+        .catch(error => { throw new MyError('Cannot find story.', 'CANNOT_FIND_STORY', 404); });
+        if (!story) throw new MyError('Cannot find story.', 'CANNOT_FIND_STORY', 404);
+        return story;
+    }
+
+    static async dislikeStory(idUser, idStory) {
+        const story = await Story.findByIdAndUpdate(idStory, { $pull: { fans: idUser } }, { new: true })
         .catch(error => { throw new MyError('Cannot find story.', 'CANNOT_FIND_STORY', 404); });
         if (!story) throw new MyError('Cannot find story.', 'CANNOT_FIND_STORY', 404);
         return story;

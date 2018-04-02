@@ -3,22 +3,12 @@ const storyRouter = express.Router();
 const parser = require('body-parser').json();
 
 const Story = require('../models/story.model');
-const { verify } = require('../lib/jwt');
+const { mustBeUser } = require('./mustBeUser');
 
-function mustBeUser(req, res, next) {
-    const { token } = req.headers;
-    if (!token) return res.status(400).send({ success: false, message: 'Invalid token.' });
-    verify(token)
-    .then(obj => {
-        req.idUser = obj._id;
-        next();
-    })
-    .catch(() => res.status(400).send({ success: false, message: 'Invalid token.' }))
-}
+storyRouter.use(parser);
+storyRouter.use(mustBeUser);
 
-storyRouter.get('/', (req, res) => {});
-
-storyRouter.post('/', mustBeUser, parser, (req, res) => {
+storyRouter.post('/', (req, res) => {
     Story.createStory(req.idUser, req.body.content)
     .then(story => res.send({ success: true, story }))
     .catch(error => {
@@ -26,7 +16,7 @@ storyRouter.post('/', mustBeUser, parser, (req, res) => {
     });
 });
 
-storyRouter.delete('/:id', mustBeUser, (req, res) => {
+storyRouter.delete('/:id', (req, res) => {
     Story.removeStory(req.idUser, req.params.id)
     .then(story => res.send({ success: true, story }))
     .catch(error => {
@@ -35,8 +25,27 @@ storyRouter.delete('/:id', mustBeUser, (req, res) => {
     });
 });
 
-storyRouter.put('/:id', mustBeUser, parser, (req, res) => {
+storyRouter.put('/:id', (req, res) => {
     Story.updateStory(req.idUser, req.params.id, req.body.content)
+    .then(story => res.send({ success: true, story }))
+    .catch(error => {
+        res.status(error.statusCode)
+        .send({ success: false, code: error.code, message: error.message });
+    });
+});
+
+storyRouter.post('/like/:idStory', (req, res) => {
+    Story.likeStory(req.idUser, req.params.idStory)
+    .then(story => res.send({ success: true, story }))
+    .catch(error => {
+        res.status(error.statusCode)
+        .send({ success: false, code: error.code, message: error.message });
+    });
+});
+
+
+storyRouter.post('/dislike/:idStory', (req, res) => {
+    Story.dislikeStory(req.idUser, req.params.idStory)
     .then(story => res.send({ success: true, story }))
     .catch(error => {
         res.status(error.statusCode)
