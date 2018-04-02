@@ -12,36 +12,23 @@ commentRouter.post('/', (req, res) => {
     const { idStory, content } = req.body;
     Comment.createComment(req.idUser, idStory, content)
     .then(comment => res.send({ success: true, comment }))
-    .catch(error => {
-        res
-        .status(error.statusCode)
-        .send({ success: false, code: error.code, message: error.message });
-    });
+    .catch(res.onError);
 });
 
 commentRouter.delete('/:id', (req, res) => {
     Comment.removeComment(req.idUser, req.params.id)
     .then(comment => res.send({ success: true, comment }))
-    .catch(error => {
-        res
-        .status(error.statusCode)
-        .send({ success: false, code: error.code, message: error.message });
-    });
+    .catch(res.onError);
 });
 
 commentRouter.put('/:id', (req, res) => {
     Comment.updateComment(req.idUser, req.params.id, req.body.content)
     .then(comment => res.send({ success: true, comment }))
-    .catch(error => {
-        res
-        .status(error.statusCode)
-        .send({ success: false, code: error.code, message: error.message });
-    });
+    .catch(res.onError);
 });
 
 commentRouter.post('/like/:idStory', (req, res) => {
 });
-
 
 commentRouter.post('/dislike/:idStory', (req, res) => {
 });

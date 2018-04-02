@@ -9,20 +9,20 @@ userRouter.post('/signup', parser, (req, res) => {
     const { email, password, phone, name } = req.body;
     User.signUp(email, password, name, phone)
     .then(user => res.send({ success: true, user }))
-    .catch(error => res.status(error.statusCode).send({ success: false, message: error.message, code: error.code }));
+    .catch(res.onError);
 });
 
 userRouter.post('/signin', parser, (req, res) => {
     const { email, password } = req.body;
     User.signIn(email, password)
     .then(user => res.send({ success: true, user }))
-    .catch(error => res.status(error.statusCode).send({ success: false, message: error.message, code: error.code }));
+    .catch(res.onError);
 });
 
 userRouter.post('/check', mustBeUser, (req, res) => {
     User.check(req.idUser)
     .then(user => res.send({ success: true, user }))
-    .catch(error => res.status(error.statusCode).send({ success: false, message: error.message, code: error.code }));
+    .catch(res.onError);
 });
 
 module.exports = { userRouter };

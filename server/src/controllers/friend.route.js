@@ -12,20 +12,20 @@ friendRouter.post('/request', (req, res) => {
     const { idReceiver } = req.body;
     User.sendFriendRequest(req.idUser, idReceiver)
     .then(user => res.send({ success: true, user }))
-    .catch(error => res.status(error.statusCode).send({ success: false, message: error.message, code: error.code }));
+    .catch(res.onError);
 });
 
 friendRouter.post('/accept', (req, res) => {
     const { idSender } = req.body;
     User.acceptFriendRequest(req.idUser, idSender)
     .then(friend => res.send({ success: true, friend }))
-    .catch(error =>  res.status(error.statusCode).send({ success: false, message: error.message, code: error.code }));
+    .catch(res.onError);
 });
 
 friendRouter.delete('/:friendId', (req, res) => {
     User.removeFriend(req.idUser, req.params.friendId)
     .then(user => res.send({ success: true, user }))
-    .catch(error => res.status(error.statusCode).send({ success: false, message: error.message, code: error.code }));
+    .catch(res.onError);
 });
 
 module.exports = { friendRouter };
