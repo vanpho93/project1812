@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Store } from '@ngrx/store';
 import { AppState } from './types';
+import { Request } from './services/request.service';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +11,11 @@ import { AppState } from './types';
 })
 
 export class AppComponent {
-  constructor(private store: Store<AppState>) {
+  constructor(private store: Store<AppState>, private request: Request) {
+    this.testService();
+  }
+
+  testService() {
+    this.request.get('/abcd')
   }
 }

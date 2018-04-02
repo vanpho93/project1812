@@ -8,6 +8,9 @@ import { StoreModule } from '@ngrx/store';
 import { AppComponent } from './app.component';
 import { userReducer } from './ngrx/userReducer';
 
+// services
+import { Request } from './services/request.service';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -21,7 +24,7 @@ import { userReducer } from './ngrx/userReducer';
       user: userReducer,
     })
   ],
-  providers: [],
+  providers: [Request],
   bootstrap: [AppComponent]
 })
 
